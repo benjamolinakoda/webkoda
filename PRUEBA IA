@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KODA BEBIDAS</title>
+    <link rel="stylesheet" href="style.css">
+    <meta content="compra, bebidas, mayoristas, minoristas, cordoba" name="keywords">
+    <meta content="Benjamin Molina, Ignacio Compiano" name="author">
+    <meta content="Pagina web destinada a la venta online de bebidas en Cordoba" name="description">
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <h1>KODA BEBIDAS</h1>
+        </div>
+
+        <div class="header-center">
+            <img src="img/logo-koda.png" alt="Logo KODA" class="logo-circular">
+        </div>
+
+        <div class="header-right">
+            <button class="icon-btn" aria-label="Cerrar">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+
+            <button class="icon-btn cart-btn" aria-label="Carrito">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge">2</span>
+            </button>
+
+            <button class="icon-btn" aria-label="Cuenta">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </button>
+
+            <button class="btn btn-primary">Ver carrito</button>
+        </div>
+    </header>
+
+    <div class="search-bar">
+        <svg class="search-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" placeholder="Buscar productos, marcas, categorías...">
+        <button class="btn btn-primary">Buscar</button>
+    </div>
+
+    <nav class="main-nav">
+        <ul class="links-wrapper">
+            <li><a href="#">Inicio</a></li>
+            <li><a href="#">Mayorista</a></li>
+            <li><a href="#">Minorista</a></li>
+            <li><a href="#">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Tu distribuidora de bebidas de confianza</h2>
+                <p>Mayorista y minorista con entrega rápida en Cordoba y alrededores. Fernet, vinos, cervezas, gaseosas y mucho más.</p>
+                <div class="hero-actions">
+                    <button class="btn btn-primary btn-lg">COMPRAR AHORA</button>
+                    <button class="btn btn-outline btn-lg">VER CATÁLOGO MAYORISTA</button>
+                </div>
+            </div>
+        </section>
+
+        <article class="info-card">
+            <h3><strong>Compra la mejor bebida a tu mejor precio</strong></h3>
+        </article>
+        <article class="info-card">
+            <h3>Envios por cordoba capital y retiro <em>presencial</em></h3>
+        </article>
+    </main>
+
+    <footer>
+        <div class="footer-col">
+            <h4>KODA BEBIDAS</h4>
+            <p>Distribuidora mayorista y minorista de bebidas</p>
+        </div>
+
+        <div class="footer-col">
+            <h4>Enlaces</h4>
+            <ul>
+                <li><a href="#">Inicio</a></li>
+                <li><a href="#">Catálogo</a></li>
+                <li><a href="#">Nosotros</a></li>
+                <li><a href="#">Contacto</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col">
+            <h4>Contacto</h4>
+            <p>WhatsApp: +54 9 358 000-0000</p>
+            <p>info@kodabebidas.com</p>
+            <p>Argentina, Córdoba</p>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2026 KODA BEBIDAS — Todos los derechos reservados
+        </div>
+    </footer>
+
+</body>
+</html>

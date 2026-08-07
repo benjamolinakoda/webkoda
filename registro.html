@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear cuenta | KODA BEBIDAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <meta content="registro, crear cuenta, bebidas" name="keywords">
+    <meta content="Benjamin Molina, Ignacio Compiano" name="author">
+    <meta content="Creá tu cuenta KODA Bebidas" name="description">
+</head>
+<body>
+    <div class="bg-photo" aria-hidden="true"></div>
+
+    <header class="site-header">
+        <div class="header-left">
+            <a href="index.html"><h1>KODA BEBIDAS</h1></a>
+        </div>
+        <div class="header-center">
+            <a href="index.html"><img src="img/logo-koda.png" alt="Logo KODA" class="logo-circular"></a>
+        </div>
+        <div class="header-right">
+            <a class="icon-btn cart-btn" href="carrito.html" aria-label="Carrito">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge js-cart-badge hidden">0</span>
+            </a>
+            <a class="btn btn-primary" href="carrito.html">Ver carrito</a>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <ul class="links-wrapper">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="catalogo.html">Catálogo</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <main class="auth-wrapper">
+        <div class="auth-card" style="max-width:480px;">
+            <h2>Crear cuenta</h2>
+            <p class="subtitle">Registrate para comprar mayorista o minorista y hacer seguimiento de tus pedidos</p>
+
+            <div id="registerAlert" class="alert alert-error" style="display:none;"></div>
+
+            <form id="registerForm">
+                <div class="form-group">
+                    <label for="regNombre">Nombre y apellido</label>
+                    <input type="text" id="regNombre" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regTelefono">Teléfono</label>
+                        <input type="tel" id="regTelefono">
+                    </div>
+                    <div class="form-group">
+                        <label for="regDireccion">Dirección</label>
+                        <input type="text" id="regDireccion">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="regPassword">Contraseña</label>
+                        <input type="password" id="regPassword" required minlength="6">
+                        <p class="error-msg">Mínimo 6 caracteres.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="regPassword2">Confirmar contraseña</label>
+                        <input type="password" id="regPassword2" required>
+                        <p class="error-msg">Las contraseñas no coinciden.</p>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Crear cuenta</button>
+            </form>
+
+            <p class="auth-footer">¿Ya tenés cuenta? <a href="login.html">Ingresá acá</a></p>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-col">
+            <h4>KODA BEBIDAS</h4>
+            <p>Distribuidora mayorista y minorista de bebidas</p>
+        </div>
+        <div class="footer-col">
+            <h4>Enlaces</h4>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="nosotros.html">Nosotros</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Contacto</h4>
+            <p>WhatsApp: +54 9 351 551-4530</p>
+            <p>info@kodabebidas.com</p>
+            <p>Argentina, Córdoba</p>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 KODA BEBIDAS — Todos los derechos reservados
+        </div>
+    </footer>
+
+    <script src="js/data/products.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/auth-pages.js"></script>
+</body>
+</html>

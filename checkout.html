@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar pedido | KODA BEBIDAS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="css/style.css">
+    <meta content="checkout, pedido, bebidas" name="keywords">
+    <meta content="Benjamin Molina, Ignacio Compiano" name="author">
+    <meta content="Finalizar pedido KODA Bebidas" name="description">
+</head>
+<body>
+    <div class="bg-photo" aria-hidden="true"></div>
+
+    <header class="site-header">
+        <div class="header-left">
+            <a href="index.html"><h1>KODA BEBIDAS</h1></a>
+        </div>
+        <div class="header-center">
+            <a href="index.html"><img src="img/logo-koda.png" alt="Logo KODA" class="logo-circular"></a>
+        </div>
+        <div class="header-right">
+            <a class="icon-btn js-admin-link" href="admin.html" aria-label="Panel admin" style="display:none;">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </a>
+            <a class="icon-btn" href="catalogo.html" aria-label="Catálogo y precios">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+            </a>
+            <a class="icon-btn cart-btn" href="carrito.html" aria-label="Carrito">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="9" cy="21" r="1"></circle>
+                    <circle cx="20" cy="21" r="1"></circle>
+                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                </svg>
+                <span class="cart-badge js-cart-badge hidden">0</span>
+            </a>
+            <a class="icon-btn js-account-link" href="login.html" aria-label="Ingresar">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </a>
+            <a class="btn btn-primary" href="carrito.html">Ver carrito</a>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <ul class="links-wrapper">
+            <li><a href="index.html">Inicio</a></li>
+            <li><a href="catalogo.html">Catálogo</a></li>
+            <li><a href="nosotros.html">Nosotros</a></li>
+            <li><a href="contacto.html">Contacto</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-hero">
+        <h2>Finalizar pedido</h2>
+        <p>Completá tus datos y coordinamos el pago y la entrega por WhatsApp</p>
+    </div>
+
+    <main class="checkout-layout" id="checkoutRoot">
+        <form class="checkout-form" id="checkoutForm">
+            <div class="alert alert-info">No procesamos pagos en el sitio. Al confirmar, te derivamos a WhatsApp para coordinar el pago y la entrega con nuestro equipo.</div>
+
+            <div class="form-group">
+                <label for="nombreCliente">Nombre y apellido *</label>
+                <input type="text" id="nombreCliente" required>
+                <p class="error-msg">Ingresá tu nombre completo.</p>
+            </div>
+            <div class="form-group">
+                <label for="telefonoCliente">Teléfono de contacto *</label>
+                <input type="tel" id="telefonoCliente" required>
+                <p class="error-msg">Ingresá un teléfono de contacto.</p>
+            </div>
+            <div class="form-group">
+                <label for="direccionCliente">Dirección de entrega *</label>
+                <input type="text" id="direccionCliente" required placeholder="Calle, número, barrio, localidad">
+                <p class="error-msg">Ingresá la dirección de entrega.</p>
+            </div>
+            <div class="form-group">
+                <label for="pagoCliente">Modalidad de pago preferida *</label>
+                <select id="pagoCliente" required>
+                    <option value="">Seleccioná una opción</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Transferencia">Transferencia bancaria</option>
+                    <option value="Mercado Pago">Mercado Pago</option>
+                </select>
+                <p class="error-msg">Elegí una modalidad de pago.</p>
+            </div>
+            <div class="form-group">
+                <label for="notasCliente">Notas adicionales (opcional)</label>
+                <textarea id="notasCliente" rows="3" placeholder="Horario preferido de entrega, referencias, etc."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg btn-block" id="submitOrderBtn">Confirmar y continuar por WhatsApp</button>
+        </form>
+
+        <aside class="order-summary">
+            <h3>Resumen del pedido</h3>
+            <div id="orderModeBadge" class="mayorista-min-note" style="display:inline-block; margin-bottom:14px;"></div>
+            <div id="orderLines"></div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span id="orderTotal">$0</span>
+            </div>
+        </aside>
+    </main>
+
+    <div id="confirmationView" class="content-section" style="display:none; text-align:center;">
+        <h2>¡Pedido registrado!</h2>
+        <p>Te llevamos a WhatsApp para coordinar el pago y la entrega con nuestro equipo. Si no se abrió automáticamente, tocá el botón de abajo.</p>
+        <a id="whatsappLink" class="btn btn-whatsapp btn-lg" target="_blank" rel="noopener">Abrir WhatsApp</a>
+        <p style="margin-top:20px;"><a href="perfil.html">Ver mis pedidos</a></p>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-col">
+            <h4>KODA BEBIDAS</h4>
+            <p>Distribuidora mayorista y minorista de bebidas</p>
+        </div>
+        <div class="footer-col">
+            <h4>Enlaces</h4>
+            <ul>
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="catalogo.html">Catálogo</a></li>
+                <li><a href="nosotros.html">Nosotros</a></li>
+                <li><a href="contacto.html">Contacto</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Contacto</h4>
+            <p>WhatsApp: +54 9 351 551-4530</p>
+            <p>info@kodabebidas.com</p>
+            <p>Argentina, Córdoba</p>
+        </div>
+        <div class="footer-bottom">
+            &copy; 2026 KODA BEBIDAS — Todos los derechos reservados
+        </div>
+    </footer>
+
+    <script src="js/data/products.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/cart.js"></script>
+    <script src="js/checkout.js"></script>
+</body>
+</html>

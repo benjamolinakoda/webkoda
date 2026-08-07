@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <filter id="blurSoft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="65"/>
+    </filter>
+    <filter id="blurMed" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
+    <linearGradient id="bottleA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <linearGradient id="bottleB" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <linearGradient id="bottleC" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#EC4899"/>
+      <stop offset="100%" stop-color="#7A1B2E"/>
+    </linearGradient>
+  </defs>
+
+  <!-- resplandores de color, bien presentes -->
+  <ellipse cx="1120" cy="140" rx="420" ry="340" fill="#2563EB" opacity="0.55" filter="url(#blurSoft)"/>
+  <ellipse cx="120" cy="120" rx="320" ry="260" fill="#1D4ED8" opacity="0.30" filter="url(#blurSoft)"/>
+  <ellipse cx="140" cy="620" rx="380" ry="300" fill="#D97706" opacity="0.42" filter="url(#blurSoft)"/>
+  <ellipse cx="760" cy="820" rx="340" ry="260" fill="#7A1B2E" opacity="0.36" filter="url(#blurSoft)"/>
+  <ellipse cx="1220" cy="700" rx="300" ry="260" fill="#2563EB" opacity="0.30" filter="url(#blurSoft)"/>
+  <ellipse cx="640" cy="300" rx="260" ry="200" fill="#DB2777" opacity="0.18" filter="url(#blurSoft)"/>
+
+  <!-- botellas como recortes flotando, fuera de foco -->
+  <g filter="url(#blurMed)" opacity="0.8">
+    <path transform="translate(1140,40) rotate(8) scale(1.9)" d="M40 8h20v20l14 20v134a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V48l14-20z" fill="url(#bottleA)"/>
+    <path transform="translate(80,320) rotate(-10) scale(2.3)" d="M40 8h20v20l14 20v134a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V48l14-20z" fill="url(#bottleB)"/>
+    <path transform="translate(560,540) rotate(6) scale(1.6)" d="M40 8h20v20l14 20v134a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V48l14-20z" fill="url(#bottleC)"/>
+    <path transform="translate(980,420) rotate(-6) scale(1.3)" d="M40 8h20v20l14 20v134a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V48l14-20z" fill="url(#bottleA)" opacity="0.85"/>
+    <path transform="translate(260,780) rotate(10) scale(1.5)" d="M40 8h20v20l14 20v134a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V48l14-20z" fill="url(#bottleC)" opacity="0.8"/>
+    <path transform="translate(1180,840) rotate(-8) scale(1.7)" d="M40 8h20v20l14 20v134a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V48l14-20z" fill="url(#bottleB)" opacity="0.85"/>
+    <path transform="translate(720,120) rotate(-4) scale(1.2)" d="M40 8h20v20l14 20v134a8 8 0 0 1-8 8H34a8 8 0 0 1-8-8V48l14-20z" fill="url(#bottleA)" opacity="0.7"/>
+  </g>
+</svg>

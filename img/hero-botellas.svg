@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 500" preserveAspectRatio="xMidYMax slice">
+  <defs>
+    <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a3f47"/>
+      <stop offset="60%" stop-color="#54595f"/>
+      <stop offset="100%" stop-color="#6b6f74"/>
+    </linearGradient>
+    <linearGradient id="bottleGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#15171a"/>
+      <stop offset="100%" stop-color="#2b2e33"/>
+    </linearGradient>
+    <linearGradient id="counter" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8a8d90"/>
+      <stop offset="100%" stop-color="#4a4d50"/>
+    </linearGradient>
+  </defs>
+  <rect width="1400" height="500" fill="url(#skyGrad)"/>
+  <rect y="430" width="1400" height="70" fill="url(#counter)"/>
+
+  <!-- fila de botellas, siluetas variadas -->
+  <g fill="url(#bottleGrad)" opacity="0.92">
+    <!-- botella 1 -->
+    <g transform="translate(60,0)">
+      <rect x="14" y="230" width="12" height="34" rx="2"/>
+      <path d="M10 258 L10 285 L2 320 L2 430 L46 430 L46 320 L38 285 L38 258 Z"/>
+    </g>
+    <!-- botella 2 mas ancha -->
+    <g transform="translate(140,0)">
+      <rect x="20" y="200" width="14" height="40"/>
+      <path d="M14 236 L14 260 L-4 300 L-4 430 L58 430 L58 300 L40 260 L40 236 Z"/>
+    </g>
+    <!-- botella 3 fina -->
+    <g transform="translate(230,0)">
+      <rect x="16" y="180" width="10" height="60" rx="2"/>
+      <path d="M12 238 L12 270 L4 300 L4 430 L38 430 L38 300 L30 270 L30 238 Z"/>
+    </g>
+    <!-- botella 4 -->
+    <g transform="translate(310,0)">
+      <rect x="18" y="240" width="12" height="28"/>
+      <path d="M12 266 L12 290 L-2 325 L-2 430 L48 430 L48 325 L34 290 L34 266 Z"/>
+    </g>
+    <!-- botella 5 alta -->
+    <g transform="translate(400,0)">
+      <rect x="20" y="150" width="12" height="70" rx="2"/>
+      <path d="M14 218 L14 250 L2 285 L2 430 L54 430 L54 285 L42 250 L42 218 Z"/>
+    </g>
+    <!-- botella 6 -->
+    <g transform="translate(490,0)">
+      <rect x="16" y="220" width="12" height="36"/>
+      <path d="M10 254 L10 282 L0 315 L0 430 L44 430 L44 315 L34 282 L34 254 Z"/>
+    </g>
+    <!-- botella 7 -->
+    <g transform="translate(570,0)">
+      <rect x="18" y="195" width="10" height="50" rx="2"/>
+      <path d="M12 243 L12 272 L2 305 L2 430 L42 430 L42 305 L32 272 L32 243 Z"/>
+    </g>
+    <!-- botella 8 -->
+    <g transform="translate(650,0)">
+      <rect x="20" y="235" width="14" height="30"/>
+      <path d="M14 263 L14 288 L-4 322 L-4 430 L58 430 L58 322 L40 288 L40 263 Z"/>
+    </g>
+    <!-- botella 9 -->
+    <g transform="translate(740,0)">
+      <rect x="16" y="205" width="10" height="55" rx="2"/>
+      <path d="M10 258 L10 285 L0 315 L0 430 L40 430 L40 315 L30 285 L30 258 Z"/>
+    </g>
+    <!-- botella 10 -->
+    <g transform="translate(820,0)">
+      <rect x="18" y="225" width="12" height="35"/>
+      <path d="M12 258 L12 285 L0 318 L0 430 L46 430 L46 318 L34 285 L34 258 Z"/>
+    </g>
+    <!-- botella 11 -->
+    <g transform="translate(900,0)">
+      <rect x="20" y="165" width="12" height="65" rx="2"/>
+      <path d="M14 228 L14 258 L2 292 L2 430 L52 430 L52 292 L40 258 L40 228 Z"/>
+    </g>
+    <!-- botella 12 -->
+    <g transform="translate(985,0)">
+      <rect x="16" y="215" width="10" height="42" rx="2"/>
+      <path d="M10 255 L10 280 L0 312 L0 430 L40 430 L40 312 L30 280 L30 255 Z"/>
+    </g>
+    <!-- botella 13 -->
+    <g transform="translate(1060,0)">
+      <rect x="18" y="240" width="12" height="28"/>
+      <path d="M12 266 L12 290 L-2 322 L-2 430 L48 430 L48 322 L34 290 L34 266 Z"/>
+    </g>
+    <!-- botella 14 -->
+    <g transform="translate(1145,0)">
+      <rect x="16" y="185" width="10" height="58" rx="2"/>
+      <path d="M10 241 L10 270 L0 302 L0 430 L38 430 L38 302 L28 270 L28 241 Z"/>
+    </g>
+    <!-- botella 15 -->
+    <g transform="translate(1220,0)">
+      <rect x="18" y="228" width="12" height="34"/>
+      <path d="M12 260 L12 286 L0 318 L0 430 L46 430 L46 318 L34 286 L34 260 Z"/>
+    </g>
+    <!-- botella 16 -->
+    <g transform="translate(1300,0)">
+      <rect x="16" y="200" width="10" height="52" rx="2"/>
+      <path d="M10 250 L10 278 L0 310 L0 430 L40 430 L40 310 L30 278 L30 250 Z"/>
+    </g>
+  </g>
+
+  <!-- reflejos leves de etiqueta -->
+  <g fill="#ffffff" opacity="0.06">
+    <rect x="70" y="330" width="30" height="60" rx="2"/>
+    <rect x="150" y="330" width="36" height="65" rx="2"/>
+    <rect x="410" y="320" width="34" height="70" rx="2"/>
+    <rect x="750" y="330" width="30" height="60" rx="2"/>
+    <rect x="910" y="320" width="34" height="70" rx="2"/>
+    <rect x="1155" y="320" width="28" height="65" rx="2"/>
+  </g>
+</svg>
