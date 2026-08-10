@@ -1,32 +1,46 @@
 # KODA BEBIDAS — Sitio web mayorista / minorista
 
 Sitio de venta mayorista y minorista de bebidas para KODA BEBIDAS (Córdoba, Argentina).
-Construido en **HTML + CSS + JavaScript puro**, sin build ni backend: todo el estado
-(usuarios, carrito, pedidos, catálogo editado desde el admin) se guarda en el
-`localStorage` del navegador.
+Frontend en **HTML + CSS + JavaScript puro** (sin frameworks ni build), con **Firebase**
+como backend: Authentication para usuarios reales y Firestore para carritos, pedidos y
+el catálogo editado desde el panel de administración. Los pedidos y el catálogo son
+compartidos entre todos los dispositivos y navegadores, no quedan aislados por usuario.
 
 ## Cómo correrlo
 
-**Opción recomendada:** abrí la carpeta en VS Code e instalá la extensión **Live Server**,
-click derecho sobre `index.html` → "Open with Live Server". Esto evita las restricciones
-que algunos navegadores aplican a los archivos abiertos con `file://`.
+El sitio usa módulos de JavaScript (`import`/`export`) para hablar con Firebase, así que
+**no se puede abrir con doble click** (los navegadores bloquean módulos en páginas
+`file://`). Tiene que servirse por HTTP:
 
-**Opción simple:** doble click en `index.html` para abrirlo directo en el navegador.
-Funciona igual, pero si tu navegador restringe `localStorage` en `file://` (poco común,
-pero puede pasar en algunas configuraciones), usá la opción de Live Server.
+**Local (recomendado para probar):** abrí la carpeta en VS Code, instalá la extensión
+**Live Server**, click derecho sobre `index.html` → "Open with Live Server".
 
-No hace falta `npm install` ni ningún paso de compilación.
+**Producción:** desplegar los archivos en cualquier hosting estático (Netlify, Vercel,
+GitHub Pages, Firebase Hosting). No hace falta build ni `npm install`.
 
-## Cuenta de administrador
+## Firebase
 
-El sitio crea automáticamente un usuario admin la primera vez que se carga:
+El proyecto está conectado a un proyecto real de Firebase (`koda-bebidas`). La config
+pública vive en `js/firebase-init.js` (son claves públicas, no secretas — así funciona
+Firebase). Los servicios usados:
 
-- **Email:** `admin@kodabebidas.com`
-- **Contraseña:** `admin123`
+- **Authentication** (Email/contraseña) — reemplaza el login/registro.
+- **Firestore** — colecciones:
+  - `users/{uid}` — perfil (nombre, teléfono, dirección, `isAdmin`).
+  - `carts/{uid}` — carrito del usuario logueado.
+  - `orders/{orderId}` — pedidos (visibles para el dueño y para cualquier admin).
+  - `productOverrides`, `productDeleted`, `productCustom` — ediciones del catálogo
+    hechas desde el panel admin (el catálogo base sigue viviendo en
+    `js/data/products.js`, estas colecciones solo guardan los cambios).
 
-Con esa cuenta se accede a `admin.html` (o al ícono de engranaje que aparece en el
-header cuando estás logueado como admin) para cargar, editar o eliminar productos,
-y para ver los pedidos entrantes.
+Las reglas de seguridad están en [`firestore.rules`](firestore.rules) — hay que
+publicarlas en Firebase Console → Firestore Database → Reglas.
+
+### Convertir un usuario en administrador
+
+No hay forma de auto-otorgarse admin desde el sitio (por seguridad). Para dar acceso al
+panel `admin.html`: Firebase Console → Firestore Database → Datos → colección `users` →
+abrir el documento del usuario → cambiar el campo `isAdmin` de `false` a `true`.
 
 ## Reglas de negocio implementadas
 
@@ -48,6 +62,8 @@ y para ver los pedidos entrantes.
 - No se puede finalizar una compra sin estar registrado/logueado (navegar el catálogo
   y armar el carrito sí está permitido como invitado; el carrito de invitado se fusiona
   con el del usuario al iniciar sesión o registrarse).
+- La recuperación de contraseña usa el flujo real de Firebase: se envía un email con un
+  link para elegir contraseña nueva.
 
 ## Catálogo de productos
 
@@ -63,10 +79,8 @@ puntual desde el panel de administración (campo "imagen" al editar, o directame
 `js/data/products.js` para cambios masivos).
 
 Los cambios hechos desde el panel de administración (editar, eliminar, crear producto)
-**no modifican `products.js`**: se guardan como overrides en `localStorage`
-(`koda_product_overrides`, `koda_product_deleted`, `koda_product_custom`) y se combinan
-con la base al mostrar el catálogo. Si necesitás cambios masivos y permanentes en el
-catálogo, es más simple editar `js/data/products.js` directamente.
+**no modifican `products.js`**: se guardan en Firestore (`productOverrides`,
+`productDeleted`, `productCustom`) y se combinan con la base al mostrar el catálogo.
 
 ## Estructura del proyecto
 
@@ -81,23 +95,28 @@ KODA/
 ├── perfil.html            Datos del usuario + historial de pedidos
 ├── admin.html             Panel de administración (productos y pedidos)
 ├── nosotros.html / contacto.html
+├── firestore.rules       Reglas de seguridad de Firestore
 ├── css/style.css          Estilos de todo el sitio
 ├── js/
-│   ├── data/products.js   Catálogo (generado desde los Excel)
-│   ├── utils.js            Helpers (moneda, localStorage, WhatsApp, header)
-│   ├── auth.js              Registro / login / recuperación de contraseña
-│   ├── cart.js               Carrito, modo mayorista/minorista, pedidos
+│   ├── data/products.js   Catálogo base (generado desde los Excel)
+│   ├── firebase-init.js   Config e inicialización de Firebase (Auth + Firestore)
+│   ├── utils.js            Helpers (moneda, WhatsApp, acceso al catálogo)
+│   ├── auth.js              Login / registro / recuperación (Firebase Auth)
+│   ├── cart.js               Carrito y pedidos (Firestore)
+│   ├── header.js             Estado del header (badge carrito, sesión) en cada página
 │   ├── catalog.js, product.js, cart-page.js, checkout.js,
-│   │   auth-pages.js, profile.js, admin.js   Lógica de cada página
+│   │   auth-pages.js, profile.js, admin.js, home.js,
+│   │   static-page.js        Lógica de cada página (todos módulos ES)
 └── img/                    Logo, hero e ícono placeholder (SVG propios)
 ```
 
 ## Limitaciones a tener en cuenta
 
-- Es un esquema 100% del lado del cliente: las contraseñas se guardan hasheadas de
-  forma simple en el navegador del propio usuario, no en un servidor. Está pensado
-  como demo funcional, no como un sistema de autenticación listo para producción.
-- La recuperación de contraseña es simulada: como no hay servidor de emails, el
-  "código" se muestra en pantalla en vez de enviarse por correo.
-- Los usuarios, carritos y pedidos viven en el `localStorage` de cada navegador: no se
-  comparten entre dispositivos ni entre distintos navegadores de la misma persona.
+- El catálogo se muestra sin login (lectura pública en Firestore), pero comprar sí
+  requiere cuenta. Las reglas de Firestore validan quién puede leer/escribir qué, pero
+  los precios de un pedido no se re-validan server-side contra el catálogo real — para
+  un volumen chico/mediano de pedidos esto es razonable, pero si el proyecto crece
+  conviene sumar validación en un backend (Cloud Function) antes de confiar ciegamente
+  en el subtotal que manda el navegador.
+- El primer administrador se otorga a mano en la consola de Firebase (ver arriba); no
+  hay una UI para promover a otros usuarios a admin todavía.

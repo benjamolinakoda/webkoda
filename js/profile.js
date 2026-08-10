@@ -1,5 +1,12 @@
-(function () {
-    const user = requireAuth("login.html");
+import { escapeHtml, formatCurrency } from "./utils.js";
+import { getOrdersForUser } from "./cart.js";
+import { requireAuth, updateCurrentUser, logoutUser } from "./auth.js";
+import { initHeader } from "./header.js";
+
+(async function () {
+    await initHeader();
+
+    const user = await requireAuth("login.html");
     if (!user) return;
 
     document.getElementById("profNombre").value = user.nombre || "";
@@ -7,9 +14,9 @@
     document.getElementById("profTelefono").value = user.telefono || "";
     document.getElementById("profDireccion").value = user.direccion || "";
 
-    document.getElementById("profileForm").addEventListener("submit", function (e) {
+    document.getElementById("profileForm").addEventListener("submit", async function (e) {
         e.preventDefault();
-        updateCurrentUser({
+        await updateCurrentUser({
             nombre: document.getElementById("profNombre").value.trim(),
             telefono: document.getElementById("profTelefono").value.trim(),
             direccion: document.getElementById("profDireccion").value.trim()
@@ -19,14 +26,14 @@
         alertBox.style.display = "block";
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", function () {
-        logoutUser();
+    document.getElementById("logoutBtn").addEventListener("click", async function () {
+        await logoutUser();
         location.href = "index.html";
     });
 
     function orderRowHtml(order) {
         const fecha = new Date(order.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
-        const items = order.items.map(i => i.cantidad + "x " + escapeHtml(i.nombre)).join(", ");
+        const items = order.items.map((i) => i.cantidad + "x " + escapeHtml(i.nombre)).join(", ");
         return (
             '<div class="order-row">' +
                 '<div class="order-header">' +
@@ -40,7 +47,7 @@
         );
     }
 
-    const orders = getOrdersForUser(user.id);
+    const orders = await getOrdersForUser(user.uid);
     const list = document.getElementById("ordersList");
     list.innerHTML = orders.length === 0
         ? '<p style="color:#667;">Todavía no hiciste ningún pedido. <a href="catalogo.html">Ver catálogo</a></p>'

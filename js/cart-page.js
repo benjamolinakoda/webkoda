@@ -1,7 +1,13 @@
-(function () {
+import { formatCurrency, escapeHtml, MAYORISTA_MIN } from "./utils.js";
+import { getMode, setMode, getCartDetails, updateCartQty, removeFromCart } from "./cart.js";
+import { initHeader, refreshCartBadge } from "./header.js";
+
+(async function () {
+    await initHeader();
+
     function updateModeButtons() {
         const mode = getMode();
-        document.querySelectorAll("#modeToggle button").forEach(btn => {
+        document.querySelectorAll("#modeToggle button").forEach((btn) => {
             btn.classList.toggle("active", btn.dataset.mode === mode);
         });
     }
@@ -26,8 +32,8 @@
         );
     }
 
-    function render() {
-        const details = getCartDetails();
+    async function render() {
+        const details = await getCartDetails();
         const listEl = document.getElementById("cartItemsList");
 
         if (details.items.length === 0) {
@@ -58,40 +64,40 @@
             checkoutBtn.disabled = details.items.length === 0;
         }
 
-        initHeaderState();
+        await refreshCartBadge();
     }
 
-    document.getElementById("modeToggle").addEventListener("click", function (e) {
+    document.getElementById("modeToggle").addEventListener("click", async function (e) {
         const btn = e.target.closest("button[data-mode]");
         if (!btn) return;
         setMode(btn.dataset.mode);
         updateModeButtons();
-        render();
+        await render();
     });
 
-    document.getElementById("cartItemsList").addEventListener("click", function (e) {
+    document.getElementById("cartItemsList").addEventListener("click", async function (e) {
         const minus = e.target.closest("[data-minus]");
         const plus = e.target.closest("[data-plus]");
         const remove = e.target.closest("[data-remove]");
         if (minus) {
             const input = document.querySelector('[data-qty="' + minus.dataset.minus + '"]');
-            updateCartQty(minus.dataset.minus, Math.max(1, (parseInt(input.value, 10) || 1) - 1));
-            render();
+            await updateCartQty(minus.dataset.minus, Math.max(1, (parseInt(input.value, 10) || 1) - 1));
+            await render();
         } else if (plus) {
             const input = document.querySelector('[data-qty="' + plus.dataset.plus + '"]');
-            updateCartQty(plus.dataset.plus, (parseInt(input.value, 10) || 1) + 1);
-            render();
+            await updateCartQty(plus.dataset.plus, (parseInt(input.value, 10) || 1) + 1);
+            await render();
         } else if (remove) {
-            removeFromCart(remove.dataset.remove);
-            render();
+            await removeFromCart(remove.dataset.remove);
+            await render();
         }
     });
 
-    document.getElementById("cartItemsList").addEventListener("change", function (e) {
+    document.getElementById("cartItemsList").addEventListener("change", async function (e) {
         const input = e.target.closest("[data-qty]");
         if (!input) return;
-        updateCartQty(input.dataset.qty, input.value);
-        render();
+        await updateCartQty(input.dataset.qty, input.value);
+        await render();
     });
 
     document.getElementById("checkoutBtn").addEventListener("click", function () {
@@ -99,5 +105,5 @@
     });
 
     updateModeButtons();
-    render();
+    await render();
 })();

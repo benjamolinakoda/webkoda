@@ -1,8 +1,15 @@
-(function () {
-    const user = requireAuth("login.html");
+import { formatCurrency, escapeHtml, generateId, buildWhatsAppLink } from "./utils.js";
+import { getCartDetails, clearCart, createOrder } from "./cart.js";
+import { requireAuth } from "./auth.js";
+import { initHeader, refreshCartBadge } from "./header.js";
+
+(async function () {
+    await initHeader();
+
+    const user = await requireAuth("login.html");
     if (!user) return;
 
-    const details = getCartDetails();
+    const details = await getCartDetails();
     if (details.items.length === 0) {
         location.href = "carrito.html";
         return;
@@ -18,16 +25,14 @@
 
     document.getElementById("orderModeBadge").textContent = "Modalidad: " + (details.mode === "mayorista" ? "Mayorista" : "Minorista");
 
-    document.getElementById("orderLines").innerHTML = details.items.map(i =>
+    document.getElementById("orderLines").innerHTML = details.items.map((i) =>
         '<div class="order-line"><span>' + i.cantidad + 'x ' + escapeHtml(i.product.nombre) + '</span><span>' + formatCurrency(i.lineTotal) + '</span></div>'
     ).join("");
     document.getElementById("orderTotal").textContent = formatCurrency(details.subtotal);
 
     function validate() {
         let valid = true;
-        [
-            ["nombreCliente"], ["telefonoCliente"], ["direccionCliente"], ["pagoCliente"]
-        ].forEach(([id]) => {
+        ["nombreCliente", "telefonoCliente", "direccionCliente", "pagoCliente"].forEach((id) => {
             const input = document.getElementById(id);
             const group = input.closest(".form-group");
             const isEmpty = !input.value.trim();
@@ -41,7 +46,7 @@
         let msg = "Hola KODA Bebidas! Quiero coordinar el siguiente pedido:\n\n";
         msg += "Pedido #" + order.id + "\n";
         msg += "Modalidad: " + (order.modalidad === "mayorista" ? "Mayorista" : "Minorista") + "\n\n";
-        order.items.forEach(i => {
+        order.items.forEach((i) => {
             msg += "- " + i.cantidad + "x " + i.nombre + " (" + formatCurrency(i.precioUnitario) + " c/u) = " + formatCurrency(i.precioUnitario * i.cantidad) + "\n";
         });
         msg += "\nSubtotal: " + formatCurrency(order.subtotal) + "\n\n";
@@ -54,15 +59,15 @@
         return msg;
     }
 
-    document.getElementById("checkoutForm").addEventListener("submit", function (e) {
+    document.getElementById("checkoutForm").addEventListener("submit", async function (e) {
         e.preventDefault();
         if (!validate()) return;
 
         const order = {
             id: generateId("pedido").slice(-8).toUpperCase(),
-            userId: user.id,
+            userId: user.uid,
             modalidad: details.mode,
-            items: details.items.map(i => ({
+            items: details.items.map((i) => ({
                 productId: i.product.id,
                 nombre: i.product.nombre,
                 cantidad: i.cantidad,
@@ -80,14 +85,14 @@
             }
         };
 
-        createOrder(order);
-        clearCart();
+        await createOrder(order);
+        await clearCart();
+        await refreshCartBadge();
 
         const waLink = buildWhatsAppLink(buildWhatsAppMessage(order));
         document.getElementById("whatsappLink").setAttribute("href", waLink);
         document.getElementById("checkoutRoot").style.display = "none";
         document.getElementById("confirmationView").style.display = "block";
-        initHeaderState();
         window.open(waLink, "_blank", "noopener");
     });
 })();

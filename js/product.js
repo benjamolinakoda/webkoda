@@ -1,7 +1,13 @@
-(function () {
+import { getProductById, formatCurrency, escapeHtml, buildWhatsAppLink } from "./utils.js";
+import { getMode, setMode, getUnitPrice, addToCart } from "./cart.js";
+import { initHeader, refreshCartBadge } from "./header.js";
+
+(async function () {
+    await initHeader();
+
     const params = new URLSearchParams(location.search);
     const id = params.get("id");
-    const product = getProductById(id);
+    const product = await getProductById(id);
     const root = document.getElementById("productDetailRoot");
 
     if (!product) {
@@ -13,12 +19,12 @@
 
     function updateModeButtons() {
         const mode = getMode();
-        document.querySelectorAll("#modeToggle button").forEach(btn => {
+        document.querySelectorAll("#modeToggle button").forEach((btn) => {
             btn.classList.toggle("active", btn.dataset.mode === mode);
         });
         const note = document.getElementById("mayoristaNote");
         note.textContent = mode === "mayorista"
-            ? "Pedido mayorista: subtotal mínimo " + formatCurrency(MAYORISTA_MIN)
+            ? "Pedido mayorista: subtotal mínimo " + formatCurrency(100000)
             : "Comprá al por menor, sin mínimo de compra";
     }
 
@@ -52,10 +58,10 @@
             const input = document.getElementById("qtyInput");
             input.value = (parseInt(input.value, 10) || 1) + 1;
         });
-        document.getElementById("addToCartBtn").addEventListener("click", () => {
+        document.getElementById("addToCartBtn").addEventListener("click", async () => {
             const qty = parseInt(document.getElementById("qtyInput").value, 10) || 1;
-            addToCart(product.id, qty);
-            initHeaderState();
+            await addToCart(product.id, qty);
+            await refreshCartBadge();
             document.getElementById("addedMsg").style.display = "block";
         });
     }

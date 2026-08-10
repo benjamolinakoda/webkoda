@@ -1,6 +1,6 @@
 // Generado automaticamente desde los listados de precios (Otras Bebidas y Vinos Mayorista/Minorista).
 // Fuente: Lista Distribuidora F&F (05/08/2026).
-const KODA_PRODUCTS = [
+window.KODA_PRODUCTS = [
   { id: 1, nombre: "Branca x 750", categoria: "Fernet", bodega: null, precioMayorista: 15815, precioMinorista: 18187, consultar: false, stock: 50, imagen: "img/placeholder-botella.svg" },
   { id: 2, nombre: "Branca x 450", categoria: "Fernet", bodega: null, precioMayorista: 10700, precioMinorista: 12305, consultar: false, stock: 50, imagen: "img/placeholder-botella.svg" },
   { id: 3, nombre: "Buhero", categoria: "Fernet", bodega: null, precioMayorista: 8185, precioMinorista: 9413, consultar: false, stock: 50, imagen: "img/placeholder-botella.svg" },

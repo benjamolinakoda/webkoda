@@ -1,11 +1,11 @@
-(function () {
-    const state = {
-        category: "all",
-        bodega: "",
-        query: "",
-        page: 1
-    };
+import { getAllProducts, formatCurrency, escapeHtml, PAGE_SIZE } from "./utils.js";
+import { getMode, setMode, getUnitPrice, addToCart } from "./cart.js";
+import { initHeader, refreshCartBadge } from "./header.js";
 
+(async function () {
+    const allProducts = await getAllProducts();
+
+    const state = { category: "all", bodega: "", query: "", page: 1 };
     const params = new URLSearchParams(location.search);
     if (params.get("cat")) state.category = params.get("cat");
     if (params.get("bodega")) state.bodega = params.get("bodega");
@@ -17,17 +17,29 @@
         render();
     };
 
+    function getCategories() {
+        const cats = {};
+        allProducts.forEach((p) => { cats[p.categoria] = (cats[p.categoria] || 0) + 1; });
+        return Object.keys(cats).sort().map((name) => ({ name, count: cats[name] }));
+    }
+
+    function getBodegas() {
+        const set = {};
+        allProducts.filter((p) => p.categoria === "Vinos" && p.bodega).forEach((p) => {
+            set[p.bodega] = (set[p.bodega] || 0) + 1;
+        });
+        return Object.keys(set).sort().map((name) => ({ name, count: set[name] }));
+    }
+
     function updateModeButtons() {
         const mode = getMode();
-        document.querySelectorAll("#modeToggle button").forEach(btn => {
+        document.querySelectorAll("#modeToggle button").forEach((btn) => {
             btn.classList.toggle("active", btn.dataset.mode === mode);
         });
         const note = document.getElementById("mayoristaNote");
-        if (mode === "mayorista") {
-            note.textContent = "Pedido mayorista: subtotal mínimo " + formatCurrency(MAYORISTA_MIN);
-        } else {
-            note.textContent = "Comprá al por menor, sin mínimo de compra";
-        }
+        note.textContent = mode === "mayorista"
+            ? "Pedido mayorista: subtotal mínimo " + formatCurrency(100000)
+            : "Comprá al por menor, sin mínimo de compra";
     }
 
     document.getElementById("modeToggle").addEventListener("click", function (e) {
@@ -43,11 +55,11 @@
         const list = document.getElementById("categoryList");
         const allCount = categories.reduce((s, c) => s + c.count, 0);
         let html = '<button type="button" class="filter-chip' + (state.category === "all" ? " active" : "") + '" data-cat="all"><span>Todas</span><span class="count">' + allCount + '</span></button>';
-        categories.forEach(c => {
+        categories.forEach((c) => {
             html += '<button type="button" class="filter-chip' + (state.category === c.name ? " active" : "") + '" data-cat="' + escapeHtml(c.name) + '"><span>' + escapeHtml(c.name) + '</span><span class="count">' + c.count + '</span></button>';
         });
         list.innerHTML = html;
-        list.querySelectorAll("button").forEach(btn => {
+        list.querySelectorAll("button").forEach((btn) => {
             btn.addEventListener("click", function () {
                 state.category = btn.dataset.cat;
                 state.page = 1;
@@ -62,7 +74,7 @@
         const select = document.getElementById("bodegaSelect");
         const bodegas = getBodegas();
         let html = '<option value="">Todas las bodegas</option>';
-        bodegas.forEach(b => {
+        bodegas.forEach((b) => {
             html += '<option value="' + escapeHtml(b.name) + '"' + (state.bodega === b.name ? " selected" : "") + '>' + escapeHtml(b.name) + ' (' + b.count + ')</option>';
         });
         select.innerHTML = html;
@@ -76,7 +88,7 @@
 
     function getFilteredProducts() {
         const q = state.query.trim().toLowerCase();
-        return getAllProducts().filter(p => {
+        return allProducts.filter((p) => {
             if (state.category !== "all" && p.categoria !== state.category) return false;
             if (state.bodega && p.bodega !== state.bodega) return false;
             if (q) {
@@ -119,7 +131,7 @@
 
         const grid = document.getElementById("productGrid");
         if (pageItems.length === 0) {
-            grid.innerHTML = '';
+            grid.innerHTML = "";
             grid.parentElement.querySelector(".empty-state")?.remove();
             const empty = document.createElement("div");
             empty.className = "empty-state";
@@ -131,7 +143,6 @@
         }
 
         renderPagination(totalPages);
-        initHeaderState();
     }
 
     function renderPagination(totalPages) {
@@ -147,7 +158,7 @@
         }
         html += '<button type="button" data-page="' + (state.page + 1) + '" ' + (state.page === totalPages ? "disabled" : "") + '>Siguiente &raquo;</button>';
         el.innerHTML = html;
-        el.querySelectorAll("button[data-page]").forEach(btn => {
+        el.querySelectorAll("button[data-page]").forEach((btn) => {
             btn.addEventListener("click", function () {
                 state.page = Number(this.dataset.page);
                 renderGrid();
@@ -156,12 +167,12 @@
         });
     }
 
-    document.getElementById("productGrid").addEventListener("click", function (e) {
+    document.getElementById("productGrid").addEventListener("click", async function (e) {
         const addBtn = e.target.closest("button[data-add]");
         if (!addBtn) return;
         e.preventDefault();
-        addToCart(addBtn.dataset.add, 1);
-        initHeaderState();
+        await addToCart(addBtn.dataset.add, 1);
+        await refreshCartBadge();
         addBtn.textContent = "✓";
         setTimeout(() => { addBtn.textContent = "+"; }, 700);
     });
@@ -172,6 +183,7 @@
         renderGrid();
     }
 
+    await initHeader();
     updateModeButtons();
     render();
     document.getElementById("globalSearch").value = state.query;

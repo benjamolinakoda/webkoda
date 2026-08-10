@@ -47,7 +47,7 @@
     <main class="auth-wrapper">
         <div class="auth-card">
             <h2>Recuperar contraseña</h2>
-            <p class="subtitle">Este sitio no tiene servidor de emails: te mostramos el código acá mismo para poder probar el flujo.</p>
+            <p class="subtitle">Te enviamos un email con un link para elegir una contraseña nueva.</p>
 
             <div id="recoverAlert" class="alert alert-error" style="display:none;"></div>
             <div id="recoverInfo" class="alert alert-info" style="display:none;"></div>
@@ -57,19 +57,7 @@
                     <label for="recEmail">Email de tu cuenta</label>
                     <input type="email" id="recEmail" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block btn-lg">Enviar código</button>
-            </form>
-
-            <form id="resetPasswordForm" style="display:none; margin-top:20px;">
-                <div class="form-group">
-                    <label for="recCode">Código de 6 dígitos</label>
-                    <input type="text" id="recCode" required maxlength="6">
-                </div>
-                <div class="form-group">
-                    <label for="recNewPassword">Nueva contraseña</label>
-                    <input type="password" id="recNewPassword" required minlength="6">
-                </div>
-                <button type="submit" class="btn btn-primary btn-block btn-lg">Restablecer contraseña</button>
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Enviar link de recuperación</button>
             </form>
 
             <p class="auth-footer"><a href="login.html">Volver a ingresar</a></p>
@@ -102,9 +90,6 @@
     </footer>
 
     <script src="js/data/products.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/cart.js"></script>
-    <script src="js/auth-pages.js"></script>
+    <script type="module" src="js/auth-pages.js"></script>
 </body>
 </html>

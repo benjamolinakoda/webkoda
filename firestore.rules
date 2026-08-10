@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // Perfiles de usuario. Cada quien lee/edita el suyo; nadie puede auto-otorgarse isAdmin.
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create: if isOwner(userId);
+      allow update: if (isOwner(userId) && request.resource.data.isAdmin == resource.data.isAdmin) || isAdmin();
+      allow delete: if false;
+    }
+
+    // Carrito: solo el dueño lo lee/escribe.
+    match /carts/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Pedidos: el cliente crea y lee los propios; solo el admin lee todos y cambia el estado.
+    match /orders/{orderId} {
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if false;
+    }
+
+    // Overrides del catalogo (ediciones/bajas/altas de productos desde el panel admin).
+    // Lectura publica (el catalogo se muestra sin login), escritura solo admin.
+    match /productOverrides/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /productDeleted/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /productCustom/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}

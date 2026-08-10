@@ -1,123 +1,91 @@
-// ===== Autenticacion basada en localStorage =====
-// NOTA: esto es un esquema de autenticacion 100% del lado del cliente, pensado
-// para una demo sin backend. El "hash" no es criptografico y las contrasenias
-// viven en el navegador del usuario. No usar este esquema para un sitio con
-// datos sensibles reales sin reemplazarlo por autenticacion en un servidor.
+// Autenticacion real con Firebase Auth + perfiles de usuario en Firestore
+// (coleccion "users", documento por uid).
+import {
+    auth, db, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signOut, updateProfile, sendPasswordResetEmail, doc, getDoc, setDoc, updateDoc
+} from "./firebase-init.js";
+import { mergeGuestCartIntoUser } from "./cart.js";
 
-const USERS_KEY = "koda_users";
-const SESSION_KEY = "koda_session";
+let currentUser = null;
+let resolveAuthReady;
+export const authReady = new Promise((resolve) => { resolveAuthReady = resolve; });
 
-function simpleHash(text) {
-    let hash = 5381;
-    for (let i = 0; i < text.length; i++) {
-        hash = ((hash << 5) + hash) + text.charCodeAt(i);
-        hash = hash | 0;
-    }
-    return "h" + Math.abs(hash).toString(36);
-}
-
-function hashPassword(password, salt) {
-    return simpleHash(salt + ":" + password + ":" + salt);
-}
-
-function seedAdminUser() {
-    const users = getJSON(USERS_KEY, null);
-    if (users !== null) return;
-    const salt = generateId("salt");
-    const admin = {
-        id: generateId("user"),
-        nombre: "Administrador Koda",
-        email: "admin@kodabebidas.com",
-        telefono: "",
-        direccion: "",
-        salt: salt,
-        passwordHash: hashPassword("admin123", salt),
-        isAdmin: true,
-        fechaRegistro: new Date().toISOString()
+async function loadProfile(fbUser) {
+    const snap = await getDoc(doc(db, "users", fbUser.uid));
+    const data = snap.exists() ? snap.data() : {};
+    currentUser = {
+        uid: fbUser.uid,
+        email: fbUser.email,
+        nombre: data.nombre || "",
+        telefono: data.telefono || "",
+        direccion: data.direccion || "",
+        isAdmin: !!data.isAdmin
     };
-    setJSON(USERS_KEY, [admin]);
-}
-seedAdminUser();
-
-function getUsers() {
-    return getJSON(USERS_KEY, []);
+    return currentUser;
 }
 
-function saveUsers(users) {
-    setJSON(USERS_KEY, users);
-}
-
-function findUserByEmail(email) {
-    const normalized = String(email).trim().toLowerCase();
-    return getUsers().find(u => u.email.toLowerCase() === normalized);
-}
-
-function registerUser(data) {
-    const email = String(data.email).trim().toLowerCase();
-    if (findUserByEmail(email)) {
-        return { ok: false, error: "Ya existe una cuenta registrada con ese email." };
+let authReadyDone = false;
+onAuthStateChanged(auth, async (fbUser) => {
+    if (fbUser) {
+        await loadProfile(fbUser);
+        await mergeGuestCartIntoUser(currentUser.uid);
+    } else {
+        currentUser = null;
     }
-    const salt = generateId("salt");
-    const user = {
-        id: generateId("user"),
-        nombre: data.nombre.trim(),
-        email: email,
-        telefono: (data.telefono || "").trim(),
-        direccion: (data.direccion || "").trim(),
-        salt: salt,
-        passwordHash: hashPassword(data.password, salt),
-        isAdmin: false,
-        fechaRegistro: new Date().toISOString()
-    };
-    const users = getUsers();
-    users.push(user);
-    saveUsers(users);
-    setSession(user.id);
-    mergeGuestCartIntoUser(user.id);
-    return { ok: true, user: user };
-}
-
-function loginUser(email, password) {
-    const user = findUserByEmail(email);
-    if (!user) {
-        return { ok: false, error: "No encontramos una cuenta con ese email." };
+    if (!authReadyDone) {
+        authReadyDone = true;
+        resolveAuthReady(currentUser);
     }
-    if (hashPassword(password, user.salt) !== user.passwordHash) {
-        return { ok: false, error: "La contrasenia es incorrecta." };
+});
+
+export function getCurrentUser() {
+    return currentUser;
+}
+
+export async function registerUser({ nombre, email, telefono, direccion, password }) {
+    try {
+        const cred = await createUserWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+        await updateProfile(cred.user, { displayName: nombre.trim() });
+        await setDoc(doc(db, "users", cred.user.uid), {
+            nombre: nombre.trim(),
+            email: email.trim().toLowerCase(),
+            telefono: (telefono || "").trim(),
+            direccion: (direccion || "").trim(),
+            isAdmin: false,
+            fechaRegistro: new Date().toISOString()
+        });
+        await loadProfile(cred.user);
+        await mergeGuestCartIntoUser(currentUser.uid);
+        return { ok: true };
+    } catch (e) {
+        return { ok: false, error: friendlyAuthError(e) };
     }
-    setSession(user.id);
-    mergeGuestCartIntoUser(user.id);
-    return { ok: true, user: user };
 }
 
-function setSession(userId) {
-    setJSON(SESSION_KEY, { userId: userId });
+export async function loginUser(email, password) {
+    try {
+        const cred = await signInWithEmailAndPassword(auth, email.trim().toLowerCase(), password);
+        await loadProfile(cred.user);
+        await mergeGuestCartIntoUser(currentUser.uid);
+        return { ok: true };
+    } catch (e) {
+        return { ok: false, error: friendlyAuthError(e) };
+    }
 }
 
-function logoutUser() {
-    localStorage.removeItem(SESSION_KEY);
+export async function logoutUser() {
+    await signOut(auth);
 }
 
-function getCurrentUser() {
-    const session = getJSON(SESSION_KEY, null);
-    if (!session) return null;
-    const users = getUsers();
-    return users.find(u => u.id === session.userId) || null;
+export async function updateCurrentUser(patch) {
+    if (!currentUser) return null;
+    await updateDoc(doc(db, "users", currentUser.uid), patch);
+    currentUser = Object.assign({}, currentUser, patch);
+    return currentUser;
 }
 
-function updateCurrentUser(patch) {
-    const user = getCurrentUser();
-    if (!user) return null;
-    const users = getUsers();
-    const idx = users.findIndex(u => u.id === user.id);
-    if (idx === -1) return null;
-    users[idx] = Object.assign({}, users[idx], patch);
-    saveUsers(users);
-    return users[idx];
-}
-
-function requireAuth(redirectTo) {
-    const user = getCurrentUser();
+export async function requireAuth(redirectTo) {
+    const user = await authReady;
     if (!user) {
         const next = encodeURIComponent(location.pathname.split("/").pop());
         location.href = (redirectTo || "login.html") + "?next=" + next;
@@ -126,8 +94,8 @@ function requireAuth(redirectTo) {
     return user;
 }
 
-function requireAdmin() {
-    const user = getCurrentUser();
+export async function requireAdmin() {
+    const user = await authReady;
     if (!user || !user.isAdmin) {
         location.href = "login.html?next=admin.html";
         return null;
@@ -135,39 +103,25 @@ function requireAdmin() {
     return user;
 }
 
-// ===== Recuperacion de contrasenia (simulada, sin envio real de emails) =====
-const RESET_CODES_KEY = "koda_reset_codes";
-
-function requestPasswordReset(email) {
-    const user = findUserByEmail(email);
-    if (!user) {
-        return { ok: false, error: "No encontramos una cuenta con ese email." };
+export async function requestPasswordReset(email) {
+    try {
+        await sendPasswordResetEmail(auth, email.trim().toLowerCase());
+        return { ok: true };
+    } catch (e) {
+        return { ok: false, error: friendlyAuthError(e) };
     }
-    const code = String(Math.floor(100000 + Math.random() * 900000));
-    const codes = getJSON(RESET_CODES_KEY, {});
-    codes[user.email] = { code: code, expires: Date.now() + 15 * 60 * 1000 };
-    setJSON(RESET_CODES_KEY, codes);
-    return { ok: true, code: code };
 }
 
-function confirmPasswordReset(email, code, newPassword) {
-    const user = findUserByEmail(email);
-    if (!user) return { ok: false, error: "No encontramos una cuenta con ese email." };
-    const codes = getJSON(RESET_CODES_KEY, {});
-    const entry = codes[user.email];
-    if (!entry || entry.code !== String(code).trim()) {
-        return { ok: false, error: "El codigo ingresado no es valido." };
-    }
-    if (Date.now() > entry.expires) {
-        return { ok: false, error: "El codigo expiro. Pedi uno nuevo." };
-    }
-    const salt = generateId("salt");
-    const users = getUsers();
-    const idx = users.findIndex(u => u.id === user.id);
-    users[idx].salt = salt;
-    users[idx].passwordHash = hashPassword(newPassword, salt);
-    saveUsers(users);
-    delete codes[user.email];
-    setJSON(RESET_CODES_KEY, codes);
-    return { ok: true };
+function friendlyAuthError(e) {
+    const code = e && e.code ? e.code : "";
+    const map = {
+        "auth/email-already-in-use": "Ya existe una cuenta registrada con ese email.",
+        "auth/invalid-email": "El email no es valido.",
+        "auth/weak-password": "La contrasenia debe tener al menos 6 caracteres.",
+        "auth/user-not-found": "No encontramos una cuenta con ese email.",
+        "auth/wrong-password": "La contrasenia es incorrecta.",
+        "auth/invalid-credential": "Email o contrasenia incorrectos.",
+        "auth/too-many-requests": "Demasiados intentos. Probá de nuevo en un rato."
+    };
+    return map[code] || "Ocurrio un error. Intenta de nuevo.";
 }

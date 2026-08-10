@@ -1,19 +1,31 @@
-(function () {
-    const admin = requireAdmin();
+import { db, doc, setDoc, deleteDoc } from "./firebase-init.js";
+import { getAllProducts, invalidateProductCache, escapeHtml, formatCurrency, getCategories } from "./utils.js";
+import { getAllOrders, updateOrderStatus } from "./cart.js";
+import { requireAdmin } from "./auth.js";
+import { initHeader } from "./header.js";
+
+(async function () {
+    await initHeader();
+
+    const admin = await requireAdmin();
     if (!admin) return;
 
-    const OVERRIDES_KEY = "koda_product_overrides";
-    const DELETED_KEY = "koda_product_deleted";
-    const CUSTOM_KEY = "koda_product_custom";
     const ADMIN_PAGE_SIZE = 30;
-
     let state = { search: "", page: 1 };
+    let allProducts = await getAllProducts();
+    let customIds = new Set();
+    let baseIds = new Set((window.KODA_PRODUCTS || []).map((p) => p.id));
+
+    function refreshIdSets() {
+        customIds = new Set(allProducts.filter((p) => !baseIds.has(p.id)).map((p) => p.id));
+    }
+    refreshIdSets();
 
     // ===== Tabs =====
-    document.querySelectorAll(".admin-tabs button").forEach(btn => {
+    document.querySelectorAll(".admin-tabs button").forEach((btn) => {
         btn.addEventListener("click", function () {
-            document.querySelectorAll(".admin-tabs button").forEach(b => b.classList.remove("active"));
-            document.querySelectorAll(".admin-panel").forEach(p => p.classList.remove("active"));
+            document.querySelectorAll(".admin-tabs button").forEach((b) => b.classList.remove("active"));
+            document.querySelectorAll(".admin-panel").forEach((p) => p.classList.remove("active"));
             btn.classList.add("active");
             document.getElementById(btn.dataset.tab === "productos" ? "panelProductos" : "panelPedidos").classList.add("active");
             if (btn.dataset.tab === "pedidos") renderOrders();
@@ -22,12 +34,7 @@
 
     // ===== Productos =====
     function nextCustomId() {
-        const all = getAllProducts();
-        return all.reduce((max, p) => Math.max(max, p.id), 0) + 1;
-    }
-
-    function isCustom(id) {
-        return getJSON(CUSTOM_KEY, []).some(p => p.id === id);
+        return allProducts.reduce((max, p) => Math.max(max, p.id), 0) + 1;
     }
 
     function priceCell(value, consultar) {
@@ -35,20 +42,20 @@
         return formatCurrency(value);
     }
 
-    function renderCategoryOptions() {
-        const list = document.getElementById("categoriaOptions");
-        list.innerHTML = getCategories().map(c => '<option value="' + escapeHtml(c.name) + '">').join("");
+    async function renderCategoryOptions() {
+        const cats = await getCategories();
+        document.getElementById("categoriaOptions").innerHTML = cats.map((c) => '<option value="' + escapeHtml(c.name) + '">').join("");
     }
 
     function renderProducts() {
         const q = state.search.trim().toLowerCase();
-        const all = getAllProducts().filter(p => !q || p.nombre.toLowerCase().includes(q) || p.categoria.toLowerCase().includes(q));
+        const all = allProducts.filter((p) => !q || p.nombre.toLowerCase().includes(q) || p.categoria.toLowerCase().includes(q));
         const totalPages = Math.max(1, Math.ceil(all.length / ADMIN_PAGE_SIZE));
         if (state.page > totalPages) state.page = totalPages;
         const start = (state.page - 1) * ADMIN_PAGE_SIZE;
         const pageItems = all.slice(start, start + ADMIN_PAGE_SIZE);
 
-        document.getElementById("productsTableBody").innerHTML = pageItems.map(p => (
+        document.getElementById("productsTableBody").innerHTML = pageItems.map((p) => (
             '<tr>' +
                 '<td>' + escapeHtml(p.nombre) + '</td>' +
                 '<td>' + escapeHtml(p.categoria) + '</td>' +
@@ -73,7 +80,7 @@
         html += '<span style="padding:8px 14px;">Página ' + state.page + ' de ' + totalPages + '</span>';
         html += '<button type="button" data-page="' + (state.page + 1) + '" ' + (state.page === totalPages ? "disabled" : "") + '>&raquo;</button>';
         el.innerHTML = html;
-        el.querySelectorAll("button[data-page]").forEach(btn => {
+        el.querySelectorAll("button[data-page]").forEach((btn) => {
             btn.addEventListener("click", function () {
                 state.page = Number(this.dataset.page);
                 renderProducts();
@@ -107,28 +114,29 @@
     document.getElementById("cancelModalBtn").addEventListener("click", closeModal);
     modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
 
-    document.getElementById("productsTableBody").addEventListener("click", function (e) {
+    document.getElementById("productsTableBody").addEventListener("click", async function (e) {
         const editBtn = e.target.closest("[data-edit]");
         const delBtn = e.target.closest("[data-delete]");
         if (editBtn) {
-            openModal(getProductById(editBtn.dataset.edit));
+            const id = Number(editBtn.dataset.edit);
+            openModal(allProducts.find((p) => p.id === id));
         } else if (delBtn) {
             const id = Number(delBtn.dataset.delete);
             if (!confirm("¿Eliminar este producto del catálogo?")) return;
-            if (isCustom(id)) {
-                const custom = getJSON(CUSTOM_KEY, []).filter(p => p.id !== id);
-                setJSON(CUSTOM_KEY, custom);
+            if (customIds.has(id)) {
+                await deleteDoc(doc(db, "productCustom", String(id)));
             } else {
-                const deleted = getJSON(DELETED_KEY, []);
-                deleted.push(id);
-                setJSON(DELETED_KEY, deleted);
+                await setDoc(doc(db, "productDeleted", String(id)), { eliminado: true });
             }
+            invalidateProductCache();
+            allProducts = await getAllProducts();
+            refreshIdSets();
             renderProducts();
             renderCategoryOptions();
         }
     });
 
-    document.getElementById("productForm").addEventListener("submit", function (e) {
+    document.getElementById("productForm").addEventListener("submit", async function (e) {
         e.preventDefault();
         const idField = document.getElementById("prodId").value;
         const consultar = document.getElementById("prodConsultar").value === "true";
@@ -138,43 +146,39 @@
             bodega: document.getElementById("prodBodega").value.trim() || null,
             precioMayorista: consultar ? null : (Number(document.getElementById("prodMayorista").value) || 0),
             precioMinorista: consultar ? null : (Number(document.getElementById("prodMinorista").value) || 0),
-            consultar: consultar,
+            consultar,
             stock: Number(document.getElementById("prodStock").value) || 0
         };
 
         if (idField) {
             const id = Number(idField);
-            if (isCustom(id)) {
-                const custom = getJSON(CUSTOM_KEY, []);
-                const idx = custom.findIndex(p => p.id === id);
-                custom[idx] = Object.assign({}, custom[idx], patch);
-                setJSON(CUSTOM_KEY, custom);
+            if (customIds.has(id)) {
+                await setDoc(doc(db, "productCustom", String(id)), patch, { merge: true });
             } else {
-                const overrides = getJSON(OVERRIDES_KEY, {});
-                overrides[id] = patch;
-                setJSON(OVERRIDES_KEY, overrides);
+                await setDoc(doc(db, "productOverrides", String(id)), patch, { merge: true });
             }
         } else {
-            const custom = getJSON(CUSTOM_KEY, []);
-            patch.id = nextCustomId();
+            const newId = nextCustomId();
             patch.imagen = "img/placeholder-botella.svg";
-            custom.push(patch);
-            setJSON(CUSTOM_KEY, custom);
+            await setDoc(doc(db, "productCustom", String(newId)), patch);
         }
 
+        invalidateProductCache();
+        allProducts = await getAllProducts();
+        refreshIdSets();
         closeModal();
         renderProducts();
         renderCategoryOptions();
     });
 
     // ===== Pedidos =====
-    function renderOrders() {
-        const orders = getAllOrders().sort((a, b) => b.fecha.localeCompare(a.fecha));
+    async function renderOrders() {
+        const orders = await getAllOrders();
         document.getElementById("ordersTableBody").innerHTML = orders.length === 0
             ? '<tr><td colspan="7" style="text-align:center; color:#667;">Todavía no hay pedidos.</td></tr>'
-            : orders.map(o => {
+            : orders.map((o) => {
                 const fecha = new Date(o.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
-                const itemsSummary = o.items.map(i => i.cantidad + "x " + i.nombre).join(", ");
+                const itemsSummary = o.items.map((i) => i.cantidad + "x " + i.nombre).join(", ");
                 return (
                     '<tr>' +
                         '<td>#' + escapeHtml(o.id) + '</td>' +
@@ -184,7 +188,7 @@
                         '<td style="max-width:260px;">' + escapeHtml(itemsSummary) + '</td>' +
                         '<td>' + formatCurrency(o.subtotal) + '</td>' +
                         '<td>' +
-                            '<select data-order="' + o.id + '" class="filter-select">' +
+                            '<select data-order="' + o.docId + '" class="filter-select">' +
                                 '<option value="pendiente"' + (o.estado === "pendiente" ? " selected" : "") + '>Pendiente</option>' +
                                 '<option value="confirmado"' + (o.estado === "confirmado" ? " selected" : "") + '>Confirmado</option>' +
                             '</select>' +
@@ -193,9 +197,9 @@
                 );
             }).join("");
 
-        document.querySelectorAll("[data-order]").forEach(sel => {
-            sel.addEventListener("change", function () {
-                updateOrderStatus(this.dataset.order, this.value);
+        document.querySelectorAll("[data-order]").forEach((sel) => {
+            sel.addEventListener("change", async function () {
+                await updateOrderStatus(this.dataset.order, this.value);
             });
         });
     }

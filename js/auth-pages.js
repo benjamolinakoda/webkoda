@@ -1,4 +1,9 @@
-(function () {
+import { registerUser, loginUser, requestPasswordReset } from "./auth.js";
+import { initHeader } from "./header.js";
+
+(async function () {
+    await initHeader();
+
     function getNextParam() {
         const params = new URLSearchParams(location.search);
         return params.get("next") || "index.html";
@@ -7,11 +12,11 @@
     // ===== LOGIN =====
     const loginForm = document.getElementById("loginForm");
     if (loginForm) {
-        loginForm.addEventListener("submit", function (e) {
+        loginForm.addEventListener("submit", async function (e) {
             e.preventDefault();
             const email = document.getElementById("loginEmail").value.trim();
             const password = document.getElementById("loginPassword").value;
-            const result = loginUser(email, password);
+            const result = await loginUser(email, password);
             const alertBox = document.getElementById("loginAlert");
             if (!result.ok) {
                 alertBox.textContent = result.error;
@@ -25,7 +30,7 @@
     // ===== REGISTRO =====
     const registerForm = document.getElementById("registerForm");
     if (registerForm) {
-        registerForm.addEventListener("submit", function (e) {
+        registerForm.addEventListener("submit", async function (e) {
             e.preventDefault();
             const alertBox = document.getElementById("registerAlert");
             const pass1 = document.getElementById("regPassword");
@@ -46,7 +51,7 @@
             }
             if (!valid) return;
 
-            const result = registerUser({
+            const result = await registerUser({
                 nombre: document.getElementById("regNombre").value,
                 email: document.getElementById("regEmail").value,
                 telefono: document.getElementById("regTelefono").value,
@@ -66,41 +71,21 @@
     // ===== RECUPERAR CONTRASEÑA =====
     const requestCodeForm = document.getElementById("requestCodeForm");
     if (requestCodeForm) {
-        let currentEmail = "";
-        requestCodeForm.addEventListener("submit", function (e) {
+        requestCodeForm.addEventListener("submit", async function (e) {
             e.preventDefault();
             const alertBox = document.getElementById("recoverAlert");
             const infoBox = document.getElementById("recoverInfo");
             alertBox.style.display = "none";
             const email = document.getElementById("recEmail").value.trim();
-            const result = requestPasswordReset(email);
+            const result = await requestPasswordReset(email);
             if (!result.ok) {
                 alertBox.textContent = result.error;
                 alertBox.style.display = "block";
                 return;
             }
-            currentEmail = email;
-            infoBox.textContent = "Como no tenemos servidor de emails, este es tu código de recuperación: " + result.code + " (válido 15 minutos).";
+            infoBox.textContent = "Te enviamos un email a " + email + " con un link para restablecer tu contraseña. Revisá tu bandeja de entrada (y spam).";
             infoBox.style.display = "block";
-            document.getElementById("resetPasswordForm").style.display = "block";
-        });
-
-        document.getElementById("resetPasswordForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-            const alertBox = document.getElementById("recoverAlert");
-            const code = document.getElementById("recCode").value.trim();
-            const newPassword = document.getElementById("recNewPassword").value;
-            const result = confirmPasswordReset(currentEmail, code, newPassword);
-            if (!result.ok) {
-                alertBox.textContent = result.error;
-                alertBox.style.display = "block";
-                return;
-            }
-            alertBox.style.display = "none";
-            document.getElementById("recoverInfo").className = "alert alert-success";
-            document.getElementById("recoverInfo").textContent = "¡Contraseña actualizada! Ya podés ingresar con tu nueva contraseña.";
-            document.getElementById("resetPasswordForm").style.display = "none";
-            requestCodeForm.style.display = "none";
+            requestCodeForm.querySelector("button").disabled = true;
         });
     }
 })();
