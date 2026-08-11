@@ -203,6 +203,7 @@ function categoryImage(categoria) {
                             '<select data-order="' + o.docId + '" class="filter-select">' +
                                 '<option value="pendiente"' + (o.estado === "pendiente" ? " selected" : "") + '>Pendiente</option>' +
                                 '<option value="confirmado"' + (o.estado === "confirmado" ? " selected" : "") + '>Confirmado</option>' +
+                                '<option value="cancelado"' + (o.estado === "cancelado" ? " selected" : "") + '>Cancelado</option>' +
                             '</select>' +
                         '</td>' +
                     '</tr>'
