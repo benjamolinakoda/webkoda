@@ -4,6 +4,18 @@ import { getAllOrders, updateOrderStatus } from "./cart.js";
 import { requireAdmin } from "./auth.js";
 import { initHeader } from "./header.js";
 
+const CATEGORY_IMAGE_MAP = {
+    "Fernet": "fernet", "Vodka": "vodka", "Whisky": "whisky", "Espumantes": "espumantes",
+    "Licores": "licores", "Aperitivos": "aperitivos", "Cervezas": "cervezas", "Gaseosas": "gaseosas",
+    "Gin": "gin", "Ron": "ron", "Cognac": "cognac", "Tequila": "tequila",
+    "Vinos": "vinos", "Otros": "otros"
+};
+
+function categoryImage(categoria) {
+    const slug = CATEGORY_IMAGE_MAP[categoria];
+    return slug ? "img/categorias/placeholder-" + slug + ".svg" : "img/placeholder-botella.svg";
+}
+
 (async function () {
     await initHeader();
 
@@ -159,7 +171,7 @@ import { initHeader } from "./header.js";
             }
         } else {
             const newId = nextCustomId();
-            patch.imagen = "img/placeholder-botella.svg";
+            patch.imagen = categoryImage(patch.categoria);
             await setDoc(doc(db, "productCustom", String(newId)), patch);
         }
 

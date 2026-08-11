@@ -1,0 +1,20 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="75%">
+      <stop offset="0%" stop-color="#1E1E22"/>
+      <stop offset="100%" stop-color="#141416"/>
+    </radialGradient>
+    <linearGradient id="liquid" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e6b23e"/>
+      <stop offset="50%" stop-color="#e6b23e"/>
+      <stop offset="100%" stop-color="#a9701c"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="url(#bg)"/>
+  <ellipse cx="100" cy="172" rx="42" ry="8" fill="#2563EB" opacity="0.18"/>
+  <g transform="translate(100,100)">
+    <path d="M -22 -60 Q -22 -70 0 -70 Q 22 -70 22 -60 L 24 60 Q 24 74 0 74 Q -24 74 -24 60 Z" fill="url(#liquid)"/><ellipse cx="0" cy="-60" rx="22" ry="6" fill="#e8e8ea" opacity="0.9"/><ellipse cx="0" cy="60" rx="24" ry="6" fill="#101114" opacity="0.5"/>
+    <rect x="-24" y="-6" width="48" height="30" fill="#0B0B0D" opacity="0.35" rx="2"/><rect x="-18" y="0" width="36" height="4" fill="#F4F4F5"/><rect x="-18" y="8" width="24" height="3" fill="#C9CBD1"/><rect x="-18" y="14" width="28" height="3" fill="#C9CBD1"/>
+  </g>
+  <text x="100" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" letter-spacing="1" fill="#52525B">KODA BEBIDAS</text>
+</svg>

@@ -73,10 +73,12 @@ lista base "F&F" del 05/08/2026): 812 vinos agrupados por bodega y 347 productos
 repartidos en Fernet, Vodka, Whisky, Espumantes, Licores, Aperitivos, Cervezas,
 Gaseosas, Gin, Ron, Cognac, Tequila y Otros.
 
-Como no había fotos reales para ~1160 productos, todos usan el mismo placeholder
-genérico (`img/placeholder-botella.svg`). Podés reemplazar la imagen de un producto
-puntual desde el panel de administración (campo "imagen" al editar, o directamente en
-`js/data/products.js` para cambios masivos).
+Como no había fotos reales para ~1160 productos, cada producto usa un placeholder
+propio de su categoría (`img/categorias/placeholder-<categoria>.svg` — botella de vino,
+lata de cerveza, botella de champagne, etc., cada una con su color) en vez de un ícono
+único genérico. Podés reemplazar la imagen de un producto puntual por una foto real
+desde el panel de administración (campo "imagen" al editar), o directamente en
+`js/data/products.js` para cambios masivos.
 
 Los cambios hechos desde el panel de administración (editar, eliminar, crear producto)
 **no modifican `products.js`**: se guardan en Firestore (`productOverrides`,
