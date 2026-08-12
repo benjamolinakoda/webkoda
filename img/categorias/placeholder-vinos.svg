@@ -1,20 +1,41 @@
-﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
   <defs>
     <radialGradient id="bg" cx="50%" cy="35%" r="75%">
       <stop offset="0%" stop-color="#1E1E22"/>
       <stop offset="100%" stop-color="#141416"/>
     </radialGradient>
-    <linearGradient id="liquid" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0%" stop-color="#9c2a4a"/>
-      <stop offset="50%" stop-color="#9c2a4a"/>
-      <stop offset="100%" stop-color="#3d0f1f"/>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5c1830"/>
+      <stop offset="45%" stop-color="#7a2038"/>
+      <stop offset="100%" stop-color="#340c1a"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#3f3f46"/>
+      <stop offset="50%" stop-color="#27272a"/>
+      <stop offset="100%" stop-color="#18181b"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
   </defs>
   <rect width="200" height="200" fill="url(#bg)"/>
-  <ellipse cx="100" cy="172" rx="42" ry="8" fill="#2563EB" opacity="0.18"/>
-  <g transform="translate(100,100)">
-    <rect x="-7" y="-84" width="14" height="26" rx="2" fill="url(#liquid)"/><path d="M -7 -60 L -7 -44 L -22 -20 L -22 70 Q -22 78 -14 78 L 14 78 Q 22 78 22 70 L 22 -20 L 7 -44 L 7 -60 Z" fill="url(#liquid)" opacity="0.95"/>
-    <rect x="-24" y="8" width="48" height="28" fill="#0B0B0D" opacity="0.55" rx="2"/><rect x="-18" y="14" width="36" height="3.5" fill="#F4F4F5"/><rect x="-18" y="21" width="24" height="2.5" fill="#71717A"/><rect x="-18" y="27" width="28" height="2.5" fill="#71717A"/>
+  <ellipse cx="100" cy="176" rx="38" ry="7" fill="#2563EB" opacity="0.16"/>
+  <g transform="translate(100,98)">
+    <!-- capsule / foil -->
+    <path d="M -6 -84 L 6 -84 L 8 -60 L -8 -60 Z" fill="url(#cap)"/>
+    <rect x="-7" y="-64" width="14" height="4" fill="#0B0B0D" opacity="0.5"/>
+    <!-- neck -->
+    <rect x="-6" y="-60" width="12" height="34" fill="url(#glass)"/>
+    <!-- shoulder to body -->
+    <path d="M -6 -26 L -17 -6 L -17 76 Q -17 84 -9 84 L 9 84 Q 17 84 17 76 L 17 -6 L 6 -26 Z" fill="url(#glass)"/>
+    <path d="M -6 -26 L -17 -6 L -17 76 Q -17 84 -9 84 L 9 84 Q 17 84 17 76 L 17 -6 L 6 -26 Z" fill="url(#sheen)"/>
+    <!-- label -->
+    <rect x="-20" y="18" width="40" height="30" fill="#0B0B0D" opacity="0.6" rx="2"/>
+    <rect x="-14" y="25" width="28" height="3" fill="#F4F4F5"/>
+    <rect x="-14" y="32" width="20" height="2.5" fill="#71717A"/>
+    <rect x="-14" y="38" width="24" height="2.5" fill="#71717A"/>
   </g>
   <text x="100" y="186" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" letter-spacing="1" fill="#52525B">KODA BEBIDAS</text>
 </svg>

@@ -45,7 +45,7 @@ import { initHeader } from "./header.js";
                     '<strong>Pedido #' + escapeHtml(order.id) + '</strong>' +
                     '<span class="status-pill ' + order.estado + '">' + order.estado + '</span>' +
                 '</div>' +
-                '<p style="font-size:0.85rem; color:#667; margin-bottom:6px;">' + fecha + ' · ' + (order.modalidad === "mayorista" ? "Mayorista" : "Minorista") + '</p>' +
+                '<p style="font-size:0.85rem; color:var(--text-3); margin-bottom:6px;">' + fecha + ' · ' + (order.modalidad === "mayorista" ? "Mayorista" : "Minorista") + '</p>' +
                 '<p style="font-size:0.88rem; margin-bottom:6px;">' + items + '</p>' +
                 '<p style="font-weight:700;">Total: ' + formatCurrency(order.subtotal) + '</p>' +
                 cancelBtn +
@@ -56,6 +56,6 @@ import { initHeader } from "./header.js";
     const orders = await getOrdersForUser(user.uid);
     const list = document.getElementById("ordersList");
     list.innerHTML = orders.length === 0
-        ? '<p style="color:#667;">Todavía no hiciste ningún pedido. <a href="catalogo.html">Ver catálogo</a></p>'
+        ? '<p style="color:var(--text-3);">Todavía no hiciste ningún pedido. <a href="catalogo.html">Ver catálogo</a></p>'
         : orders.map(orderRowHtml).join("");
 })();

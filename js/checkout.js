@@ -93,6 +93,8 @@ import { initHeader, refreshCartBadge } from "./header.js";
         document.getElementById("whatsappLink").setAttribute("href", waLink);
         document.getElementById("checkoutRoot").style.display = "none";
         document.getElementById("confirmationView").style.display = "block";
+        document.querySelector("#pageHero h2").textContent = "¡Pedido registrado!";
+        document.querySelector("#pageHero p").textContent = "Pedido #" + order.id + " — coordinamos el pago y la entrega por WhatsApp";
         window.open(waLink, "_blank", "noopener");
     });
 })();

@@ -91,6 +91,18 @@ export async function getCategories() {
     return Object.keys(cats).sort().map((name) => ({ name, count: cats[name] }));
 }
 
+export const CATEGORY_IMAGE_MAP = {
+    "Fernet": "fernet", "Vodka": "vodka", "Whisky": "whisky", "Espumantes": "espumantes",
+    "Licores": "licores", "Aperitivos": "aperitivos", "Cervezas": "cervezas", "Gaseosas": "gaseosas",
+    "Gin": "gin", "Ron": "ron", "Cognac": "cognac", "Tequila": "tequila",
+    "Vinos": "vinos", "Otros": "otros"
+};
+
+export function categoryImage(categoria) {
+    const slug = CATEGORY_IMAGE_MAP[categoria];
+    return slug ? "img/categorias/placeholder-" + slug + ".svg" : "img/placeholder-botella.svg";
+}
+
 export async function getBodegas() {
     const all = await getAllProducts();
     const set = {};

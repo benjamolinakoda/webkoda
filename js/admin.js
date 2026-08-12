@@ -1,20 +1,8 @@
 import { db, doc, setDoc, deleteDoc } from "./firebase-init.js";
-import { getAllProducts, invalidateProductCache, escapeHtml, formatCurrency, getCategories } from "./utils.js";
+import { getAllProducts, invalidateProductCache, escapeHtml, formatCurrency, getCategories, categoryImage } from "./utils.js";
 import { getAllOrders, updateOrderStatus } from "./cart.js";
 import { requireAdmin } from "./auth.js";
 import { initHeader } from "./header.js";
-
-const CATEGORY_IMAGE_MAP = {
-    "Fernet": "fernet", "Vodka": "vodka", "Whisky": "whisky", "Espumantes": "espumantes",
-    "Licores": "licores", "Aperitivos": "aperitivos", "Cervezas": "cervezas", "Gaseosas": "gaseosas",
-    "Gin": "gin", "Ron": "ron", "Cognac": "cognac", "Tequila": "tequila",
-    "Vinos": "vinos", "Otros": "otros"
-};
-
-function categoryImage(categoria) {
-    const slug = CATEGORY_IMAGE_MAP[categoria];
-    return slug ? "img/categorias/placeholder-" + slug + ".svg" : "img/placeholder-botella.svg";
-}
 
 (async function () {
     await initHeader();
@@ -187,7 +175,7 @@ function categoryImage(categoria) {
     async function renderOrders() {
         const orders = await getAllOrders();
         document.getElementById("ordersTableBody").innerHTML = orders.length === 0
-            ? '<tr><td colspan="7" style="text-align:center; color:#667;">Todavía no hay pedidos.</td></tr>'
+            ? '<tr><td colspan="7" style="text-align:center; color:var(--text-3);">Todavía no hay pedidos.</td></tr>'
             : orders.map((o) => {
                 const fecha = new Date(o.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
                 const itemsSummary = o.items.map((i) => i.cantidad + "x " + i.nombre).join(", ");

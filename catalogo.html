@@ -117,7 +117,15 @@
         <section>
             <div class="results-info">
                 <h2 id="resultsTitle">Catálogo</h2>
-                <span id="resultsCount"></span>
+                <div class="results-info-right">
+                    <span id="resultsCount"></span>
+                    <select class="filter-select sort-select" id="sortSelect">
+                        <option value="relevancia">Relevancia</option>
+                        <option value="precio-asc">Precio: menor a mayor</option>
+                        <option value="precio-desc">Precio: mayor a menor</option>
+                        <option value="nombre-asc">Nombre: A-Z</option>
+                    </select>
+                </div>
             </div>
             <div class="product-grid" id="productGrid"></div>
             <div class="pagination" id="pagination"></div>

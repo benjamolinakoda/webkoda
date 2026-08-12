@@ -5,7 +5,7 @@ import { initHeader, refreshCartBadge } from "./header.js";
 (async function () {
     const allProducts = await getAllProducts();
 
-    const state = { category: "all", bodega: "", query: "", page: 1 };
+    const state = { category: "all", bodega: "", query: "", page: 1, sort: "relevancia" };
     const params = new URLSearchParams(location.search);
     if (params.get("cat")) state.category = params.get("cat");
     if (params.get("bodega")) state.bodega = params.get("bodega");
@@ -86,9 +86,15 @@ import { initHeader, refreshCartBadge } from "./header.js";
         renderGrid();
     });
 
+    document.getElementById("sortSelect").addEventListener("change", function () {
+        state.sort = this.value;
+        state.page = 1;
+        renderGrid();
+    });
+
     function getFilteredProducts() {
         const q = state.query.trim().toLowerCase();
-        return allProducts.filter((p) => {
+        const filtered = allProducts.filter((p) => {
             if (state.category !== "all" && p.categoria !== state.category) return false;
             if (state.bodega && p.bodega !== state.bodega) return false;
             if (q) {
@@ -97,6 +103,21 @@ import { initHeader, refreshCartBadge } from "./header.js";
             }
             return true;
         });
+
+        if (state.sort === "nombre-asc") {
+            filtered.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+        } else if (state.sort === "precio-asc" || state.sort === "precio-desc") {
+            const mode = getMode();
+            const dir = state.sort === "precio-asc" ? 1 : -1;
+            filtered.sort((a, b) => {
+                if (a.consultar && b.consultar) return 0;
+                if (a.consultar) return 1;
+                if (b.consultar) return -1;
+                return (getUnitPrice(a, mode) - getUnitPrice(b, mode)) * dir;
+            });
+        }
+
+        return filtered;
     }
 
     function productCardHtml(p) {
